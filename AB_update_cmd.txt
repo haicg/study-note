@@ -1,0 +1,82 @@
+1. 思浪APP路径   http://dev.ppcam.tv/dl/dev/oem/xenon/
+2.dev的开发路径
+
+wget http://dev.ppcam.tv/dl/dev/ESP2/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0 http://dev.ppcam.tv/dl/dev/ESP2/&
+
+wget http://dev.ppcam.tv/dl/dev/ESP3/ESP3-VerInfo.txt
+mv ESP3-VerInfo.txt /tmp
+fw_check 0 http://dev.ppcam.tv/dl/dev/ESP3/&
+
+
+camera修改升级路径：
+config_toolbox setprop firmware.update.url.http http://dev.ppcam.tv/dl/dev
+config_toolbox setprop firmware.update.url.http http://dev.ppcam.tv/dl/release
+
+
+升级：
+wget  http://dev.ppcam.tv/dl/jiangping/2.00.11-r/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  http://dev.ppcam.tv/dl/jiangping/2.00.11-r/ &
+
+
+wget  http://dev.ppcam.tv/dl/lihai/2.00.17/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  http://dev.ppcam.tv/dl/lihai/2.00.17/ &
+
+wget  http://dev.ppcam.tv/dl/lihai/test/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  http://dev.ppcam.tv/dl/lihai/test/ &
+
+wget  http://dev.ppcam.tv/dl/lihai/custom/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  http://dev.ppcam.tv/dl/lihai/custom/ &
+
+wget  http://dev.ppcam.tv/dl/lihai/ese/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  http://dev.ppcam.tv/dl/lihai/ese/ &
+
+wget  http://dev.ppcam.tv/dl/lihai/latest/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  http://dev.ppcam.tv/dl/lihai/latest/ &
+
+
+wget  ftp://218.206.129.214/ftp/zwave/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  ftp://218.206.129.214/ftp/zwave/&
+
+
+
+wget  ftp://192.168.214.188/ftp/ese_update/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0  ftp://192.168.214.188/ftp/ese_update/ &
+
+
+
+可能遗弃的路径：
+wget http://dev.ppcam.tv/dl/jiangping/doorlock/ESP2-VerInfo.txt
+mv ESP2-VerInfo.txt /tmp
+fw_check 0 http://dev.ppcam.tv/dl/jiangping/doorlock/ &
+
+
+wget ftp://ftp:ftp@218.206.129.155/id/id.sh
+sh id.sh 2210000025
+
+wget ftp://ftp:ftp@218.206.129.155/update/update_uboot_210_id.sh
+sh update_uboot_210_id.sh 2210000035&
+
+
+touch linux.img
+touch rootfs.bin
+wget ftp://ftp:ftp@218.206.129.155/update/update_uboot_210.sh
+sh update_uboot_210.sh &
+
+/*AB330 shell*/
+wget ftp://ftp:ftp@218.206.129.155/update/update_uboot_330.sh
+sh update_uboot_330.sh &
+
+touch linux.img
+touch rootfs.bin
+wget ftp://ftp:ftp@218.206.129.155/update/update_uboot_330_id.sh
+sh update_uboot_330_id.sh 2330000007&
