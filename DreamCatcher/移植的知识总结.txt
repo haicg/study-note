@@ -1,0 +1,36 @@
+1. Linux kernel的Makefile和Kconfig以及Make menuconfig的关系
+Linux内核的Makefile分为5个部分：
+     Makefile                         最顶层Makefile
+    .config                            内核当前配置文件，编译时成为顶层Makefile的一部分
+    arch/$(ARCH)/Makefile   和体系结构相关的具体架构的Makefile
+    scripts/Makefile.*            一些Makefile的通用的规则，面向所有的Kbuild Makefiles。
+     kbuildMakefiles               内核各级目录源代码中大约有500个这样的文件，编译时根据上层Makefile传下来的宏定义和其他编译规则，将源代码编译成模块或编入内核
+
+参考链接：http://blog.csdn.net/xuyuefei1988/article/details/9285379
+
+2.Linux 内核移植（分区相关）
+内核分区的基本信息存放在mtd_partition这个结构体中，如果需要修改分区的大小在这边改动，同时也需要修改Uboot 那边，要保持一致，因为Uboot那边负责保存下载时候不同文件的一个地址偏移，当然也可以在下载的时候手动指定地址的偏移，这样就可以不用修改Uboot中的分区信息。
+关于Uboot中的分区和Kernel中的分区的关系:在u-boot里面我们划分过分区，在这里又划分分区，但是这两次划分分区是完全不也一样的。在u-boot里面的划分分区其实并不是真的划分分区，他只是为了能用分区名来代替那些offset和size。而内核里面划分分区的话就是真的划分分区了，规定那个分区放什么代码就要放什么代码！
+参考链接：
+linux-3.4.2移植笔记——修改分区及制作jffs2根文件系统 ：http://liu1227787871.blog.163.com/blog/static/205363197201272522136530/
+
+挂载NFS 修改boot参数
+setenv bootargs 'noinitrd mem=64M console=ttyS0 root=/dev/nfs nfsroot=10.0.0.87:/esproot/k1/root ip=10.0.0.188:10.0.0.87:10.0.0.1:255.255.255.0::eth0:off'
+bootcmd 这个命令是用来将内核载入到内存，然后再启动，本质上就多条Uboot的命令，所以我们这边不需要改动。
+当内核启动起来之后，就是按照启动流程和打印信息来一步一步的check每一个步骤.
+原始Uboot参数为：
+bootargs=console=ttyS0,115200 root=/dev/mtdblock2 init=/linuxrc mem=64M isp=10M)
+bootcmd=loadkernel 0x00007FFC 0x0;bootm 0x00008000
+##用NFS 作为Linux的根文件系统之后，直接通过NFS 启动后，无法找到设备ttyS0，这个时候需要在配置内核的时候打开如下选项 Device Drivers->Generic Driver Options->Maintain a devtmpfs filesystem to mount at dev->Automount devtmpfs at /dev, after kernel mounter the rootfs
+
+原厂给的编译工具中使用的Perl模块，在本机中没有，需要自己到网上去寻找，首先要确定模块的名字，而不是后面函数的名字，例如Encode::Detect::Detector module，要想找到这个模块的名称就必须将这个作为一个整体去搜索。知道这个模块的名字之后，再去perl mode的常用的下载站去下载，这边使用的是http://www.cpan.org/。最后是源码安装module，perl Makefile.PL ; make ; make test ;make install，前面几条命令就可以完成工作。
+
+##Inotify file 的内核支持
+因为我们的程序使用到了内核的这个功能，所以需要在编译内核的时候选中这个功能，具体的配置路径： File systems ---->notify file change notification support 和Inotify support for user space
+
+##串口测试
+使用的是网上下载一个comtest程序，下载链接http://www.cnblogs.com/kissazi2/archive/2013/07/20/3203242.html
+
+第一步：将RX和TX 短路起来，然后然后发送，看看自己能不能收到。这个其中遇到一个问题，就是TTY设置的问题，因为串口收发被定向到另一个TTy上面去了。所以这个时候就需要知道你想用的终端是哪个TTY，此时可以用tty这个命令来获得当前终端的TTY设备号。
+第二步：测试Uart和PC 之间的通信，首先将TX 和 RX 分别接到串口的转接板上，然后在PC 上使用minicom来打开PC 上的终端，此时遇到一个问题，就是minicom已经开启了一个了，直接输入minicom ，就会提示TTYUSB0已经被占用，以前没有注意过这个问题，man minicom，得到minicom [options] [configuration], 通过这个提示可以发现在minicom
+跟上配置文件的名称就可以了，所以首先需要建立一个配置文件， sudo minicom -s ,这样就可以打开一个minicom的配置界面，最后要另存为一个名字（假设test），下面就使用命令minicom test 就可以打开串口TTYUSB1了。至此，任务就圆满结束了。

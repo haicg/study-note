@@ -1,0 +1,513 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass paper
+\begin_preamble
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xeCJK}
+
+\setmainfont{Times New Roman}
+
+\setCJKmainfont{STKaiti}
+\setCJKmonofont{STKaiti}% 设置缺省中文字体
+\setlength{\parindent}{2em}
+%\parindent 2em   %段首缩进
+
+\XeTeXlinebreaklocale “zh”
+%\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+%\newcommand\Helvetica{\fontspec {Helvetica}}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package auto
+\inputencoding utf8
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 2
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+ARM Linux kernel 和 APP 的移植
+\end_layout
+
+\begin_layout Author
+Lihai
+\end_layout
+
+\begin_layout Abstract
+本文主要记录SN98600移植linux及搭建开发环境遇到问题。 其中宿主机使用的系统是Ubuntu-14.04。主要设计到开发初期的Uboot的使用，NFS
+ 文件系统启动，以及内核移植，app应用的开发等方面。
+\end_layout
+
+\begin_layout Part
+问题汇总
+\end_layout
+
+\begin_layout Section
+Linux kernel 移植
+\end_layout
+
+\begin_layout Subsection
+Linux kernel的Makefile和Kconfig以及Make menuconfig的关系
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+Linux内核的Makefile分为5个部分
+\begin_inset CommandInset citation
+LatexCommand cite
+key "2"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+Makefile 最顶层Makefile .config 内核当前配置文件，编译时成为顶层Makefile的一部分
+\end_layout
+
+\begin_layout Standard
+arch/$(ARCH)/Makefile 和体系结构相关的具体架构的Makefile
+\end_layout
+
+\begin_layout Standard
+scripts/Makefile.* 一些Makefile的通用的规则，面向所有的Kbuild Makefiles。
+\end_layout
+
+\begin_layout Standard
+kbuildMakefiles 内核各级目录源代码中大约有500个这样的文件，编译时根据上层Makefile传下来的宏定义和其他编译规则，将源代码编译成模块或编
+入内核
+\end_layout
+
+\begin_layout Subsection
+内核移植分区相关
+\end_layout
+
+\begin_layout Subsubsection
+分区信息内核存放位置
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+内核分区的基本信息存放在mtd_partition这个结构体中，源码在内核中的大概位置（src/arch/arm/mach-sn986xx/driver.c）,不
+同芯片厂商可能存放在不同的文件中。
+\end_layout
+
+\begin_layout Subsubsection
+修改分区信息
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+如果需要修改分区的大小，不仅需要在这边修改，同时也需要修改Uboot中的关于烧入地址的偏移量。这两边需要保持一致。因为Uboot那边负责保存下载时候不同文件的一
+个地址偏移，当然也可以在下载的时候手动指定地址的偏移，这样就可以不用修改Uboot中的分区信息。
+\emph on
+关于Uboot中的分区和Kernel中的分区的关系
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+
+\end_inset
+
+:在u-boot里面我们划分过分区，在这里又划分分区，但是这两次划分分区是完全不也一样的。在u-boot里面的划分分区其实并不是真的划分分区，他只是为了能用分区
+名来代替那些offset和size。而内核里面划分分区的话就是真的划分分区了，规定那个分区放什么代码就要放什么代码！
+\end_layout
+
+\begin_layout Subsection
+编译工具相关
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+原厂给的编译工具中使用的Perl模块，在本机中没有，需要自己到网上去寻找。
+\end_layout
+
+\begin_layout Standard
+首先要确定模块的名字，而不是后面函数的名字，例如Encode::Detect::Detector module，要想找到这个模块的名称就必须将这个作为一个整体去
+搜索。
+\end_layout
+
+\begin_layout Standard
+知道这个模块的名字之后，再去perl mode的常用的下载站去下载，这边使用的是http://www.cpan.org/。
+\end_layout
+
+\begin_layout Standard
+最后是源码安装module，perl Makefile.PL ; make ; make test ;make install （在make install的时候
+可能要注意权限问题）。
+\end_layout
+
+\begin_layout Subsection
+Inotify file 的内核支持
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+Inotify file 的内核支持 因为我们的程序使用到了内核的这个功能，所以需要在编译内核的时候选中这个功能，具体的配置路径：
+\end_layout
+
+\begin_layout Standard
+File systems ---->notify file change notification support 和Inotify support
+ for user space
+\end_layout
+
+\begin_layout Subsection
+串口测试
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+串口测试 使用的是网上下载一个comtest程序，下载链接http://www.cnblogs.com/kissazi2/archive/2013/07/20/32
+03242.html
+\end_layout
+
+\begin_layout Standard
+第一步：将RX和TX短路起来，然后然后发送，看看自己能不能收到。这个其中遇到一个问题，就是TTY设置的问题，因为串口收发被定向到另一个TTy上面去了。所以这个时
+候就需要知道你想用的终端是哪个TTY，此时可以用tty这个命令来获得当前终端的TTY设备号。
+\end_layout
+
+\begin_layout Standard
+第二步：测试Uart和PC 之间的通信，首先将TX 和 RX 分别接到串口的转接板上，然后在PC 上使用minicom来打开PC上的终端，此时遇到一个问题，就是
+minicom已经开启了一个了，
+\end_layout
+
+\begin_layout Standard
+直接输入minicom ，就会提示TTYUSB0已经被占用，以前没有注意过这个问题，man minicom，得到minicom [options]
+ [configuration], 通过这个提示可以发现在
+\end_layout
+
+\begin_layout Standard
+minicom后面跟上配置文件的名称就可以了，所以首先需要建立一个配置文件，sudo minicom -s ,这样就可以打开一个minicom的配置界面，最后要
+另存为一个名字（假设test），
+\end_layout
+
+\begin_layout Standard
+下面就使用命令minicom test 就可以打开串口TTYUSB1了。至此，任务就圆满结束了。
+\end_layout
+
+\begin_layout Section
+NFS作为根文件系统及挂载遇到的问题
+\end_layout
+
+\begin_layout Subsection
+在ARM开发板的Linux 系统的动态库搜索路径自定义
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+在开发阶段使用nfs方式挂载进行程序的运行，有的程序需要使用动态库，这个时候需要指定动态库的路径。 有三种解决方法：
+\end_layout
+
+\begin_layout Standard
+第一种直接在代码编译的时候指定动态库的搜索路径，这种方法比较死板，不够灵活。
+\end_layout
+
+\begin_layout Standard
+第二种方法：修改/etc/ld.so.cache,通过修改/etc/ld.so.conf，然后再使用ldconfig,更新ld.so.cache。这种方法在开发板没有行得通
+，因为没有找到上面几个文件。
+\end_layout
+
+\begin_layout Standard
+第三种方法是修改环境变量LD_LIBRARY_PATH, 使用 export LD_LIBRARY_PATH = "/opt/lib" ,这种方法比较灵活，经过
+测试是可以行的通。
+\end_layout
+
+\begin_layout Subsection
+动态库搜索路径的先后顺序
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+经过上面的问题突然想起来一个问题，就是当存在不同不版本的同一个库，动态库的搜索路径的先后顺序是什么样？
+\end_layout
+
+\begin_layout Standard
+动态库的搜索路径搜索的先后顺序是
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+1.编译目标代码时指定的动态库搜索路径；
+\end_layout
+
+\begin_layout Standard
+2.环境变量LD_LIBRARY_PATH指定的动态库搜索路径；
+\end_layout
+
+\begin_layout Standard
+3.配置文件/etc/ld.so.conf中指定的动态库搜索路径；
+\end_layout
+
+\begin_layout Standard
+4.默认的动态库搜索路径/lib /usr/lib。
+\end_layout
+
+\begin_layout Subsection
+（特别）NFS在ARM板子上可以挂载，但是不能读取宿主机内容
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+问题描述：NFS服务在arm板子上面可以挂载，同时执行创建文件的命令也是可以，但就是不能获取目录下的内容，具体表现就是LS这个命令没有任何的返回。
+ 跳坑历程：
+\end_layout
+
+\begin_layout Standard
+第一次：认为自己文件夹的权限出了问题，然后都改成777,还是不能解决问题。
+\end_layout
+
+\begin_layout Standard
+第二次：然后觉得是自己在/etc/export 上面出了问题，结果发现还不是。
+\end_layout
+
+\begin_layout Standard
+第三次：接着我就用虚拟机里面的linux来挂再NFS，发现没有任何问题，通过mount命令发现NFS是以V4版本进行挂载，同时还有很多其他的参数。
+\end_layout
+
+\begin_layout Standard
+第四步：进一步我怀疑是不是我的参数没有完全设置正确，一开始我用TCP来连接
+\end_layout
+
+\begin_layout LyX-Code
+（mount -o nolock,hard,tcp -t nfs 192.168.1.128:/esproot/k1 /tmp）
+\end_layout
+
+\begin_layout Standard
+，发现问题依旧。最后我抱着试一试的态度改用了udp的链接居然可以了
+\end_layout
+
+\begin_layout LyX-Code
+（mount -o nolock,hard,udp -t nfs 192.168.1.128:/esproot/k1 /tmp）
+\end_layout
+
+\begin_layout Standard
+下次再来找找具体是什么原因，估计是NFS server上某个端口没有开。 后来在开发板上烧入了较新版本的busybox的镜像文件，就没有这个问题了。
+\end_layout
+
+\begin_layout Standard
+看来问题还是处在busybox的版本上，以后有时间还要继续查找这个问题的所在。
+\end_layout
+
+\begin_layout Subsection
+NFS作为根文件系统的相关配置
+\end_layout
+
+\begin_layout Subsubsection
+uboot中内核启动参数的修改
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+挂载NFS 需要修改bootarg参数 ，需要在Uboot的交互终端中，输入以下的命令：
+\end_layout
+
+\begin_layout Standard
+setenv bootargs 'noinitrd mem=64M console=ttyS0 root=/dev/nfs nfsroot=10.0.0.87:/es
+proot/k1/root ip=10.0.0.188:10.0.0.87:10.0.0.1:255.255.255.0::eth0:off'
+\end_layout
+
+\begin_layout Standard
+bootcmd 这个命令是用来将内核载入到内存，然后再启动，本质上就多条Uboot命令的一个批处理。
+\end_layout
+
+\begin_layout Standard
+当内核启动起来之后，就是按照启动流程和打印信息来一步一步的check每一个步骤。
+\end_layout
+
+\begin_layout Standard
+原始Uboot参数为： bootargs=console=ttyS0,115200 root=/dev/mtdblock2 init=/linuxrc
+ mem=64M isp=10M) bootcmd=loadkernel 0x00007FFC 0x0;bootm 0x00008000
+\end_layout
+
+\begin_layout Subsubsection
+（注意）使用NFS作为filesystem启动后，无法找到设备ttyS0（/dev 下面是空的）
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+问题描述：用NFS 作为Linux的根文件系统之后，直接通过NFS 启动后，无法找到设备ttyS0
+\end_layout
+
+\begin_layout Standard
+解决方法：这个时候需要在配置内核的时候打开如下选项
+\end_layout
+
+\begin_layout Standard
+Device Drivers->Generic Driver Options->Maintain a devtmpfs filesystem to
+ mount at dev->Automount devtmpfs at /dev, after kernel mounter the rootfs
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "1"
+key "1"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "动态库的搜索路径顺序及其种类"
+target "http://blog.sina.com.cn/s/blog_6397bdd20101fbne.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "2"
+key "2"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name " Linux kernel的Makefile和Kconfig以及Make menuconfig的关系"
+target "http://blog.csdn.net/xuyuefei1988/article/details/9285379"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "3"
+key "key-4"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "linux-3.4.2移植笔记——修改分区及制作jffs2根文件系统 "
+target "http://liu1227787871.blog.163.com/blog/static/205363197201272522136530/"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

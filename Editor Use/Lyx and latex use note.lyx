@@ -1,0 +1,445 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xeCJK}
+
+\setmainfont{Times New Roman}
+
+\setCJKmainfont{STKaiti}
+\setCJKmonofont{STKaiti}% 设置缺省中文字体
+\parindent 2em   %段首缩进
+
+\XeTeXlinebreaklocale “zh”
+%\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+\newcommand\Helvetica{\fontspec {Helvetica}}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package auto
+\inputencoding utf8
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+LATEX 及LYX 使用问题总结
+\end_layout
+
+\begin_layout Section
+运行环境：
+\end_layout
+
+\begin_layout Subparagraph
+系统：Ubuntu14.04 x86_64
+\end_layout
+
+\begin_layout Section
+LYX的中文支持问题
+\end_layout
+
+\begin_layout Standard
+最后采用的是LYX和Xetex的组合，这种方法可以简单有效的解决中文乱码问题
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+这边一定要有个需要注意的问题，就是先安装Xetex，然后再安装LYX，因为LYX在安装完成后，第一次使用的时候会去扫描当前的系统环境。
+\end_layout
+
+\begin_layout Standard
+LYX肯定有一个初始化的文件夹，估计将那个删除也会使LYX 重新进行一次系统环境扫描（个人推测）。
+\end_layout
+
+\begin_layout Standard
+安装Xetex的命令即安装LYX的命令是
+\begin_inset CommandInset citation
+LatexCommand cite
+key "2"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout LyX-Code
+sudo apt-get install texlive-xetex (Install xetex)
+\end_layout
+
+\begin_layout LyX-Code
+sudo add-apt-repository ppa:lyx-devel/release  (Add PPA for the 'Lyx release')
+\end_layout
+
+\begin_layout LyX-Code
+sudo apt-get update
+\end_layout
+
+\begin_layout LyX-Code
+sudo apt-get install lyx2.0 (v1 or v2.0 on you, install from ppa)
+\end_layout
+
+\begin_layout Standard
+到这一步已经有了一个基本的写作环境，但是对于中文文档，还需要在LYX的文档导言区进行一些设置：
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{amsmath} 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{fontspec} 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{xunicode} 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{xltxtra} 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{indentfirst} %第一段也可以缩进
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{listings} 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+usepackage{xeCJK}
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+setmainfont{Times New Roman}
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+setCJKmainfont{STKaiti} 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+setCJKmonofont{STKaiti} % 设置缺省中文字体 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+parindent 2em   %段首缩进
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+XeTeXlinebreaklocale “zh” 
+\backslash
+XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt 
+\end_layout
+
+\begin_layout LyX-Code
+
+\backslash
+newcommand
+\backslash
+Helvetica{
+\backslash
+fontspec {Helvetica}}
+\end_layout
+
+\begin_layout Paragraph
+上面的这段内容主要是设置中文的默认字体是华文楷体，英文的默认字体是Times New Roman，段首缩进2个字符。
+\end_layout
+
+\begin_layout Section
+LYX 的中文字体问题
+\end_layout
+
+\begin_layout Standard
+因为Ubuntu中默认的中文字体很少，需要自己手动进行安装。
+\end_layout
+
+\begin_layout Standard
+具体的安装步骤：
+\end_layout
+
+\begin_layout LyX-Code
+sudo apt-get install xfonts-wqy ttf-wqy-microhei ttf-wqy-zenhei
+\end_layout
+
+\begin_layout LyX-Code
+fc-cache
+\end_layout
+
+\begin_layout LyX-Code
+sudo fc-cache -f -s -v
+\end_layout
+
+\begin_layout LyX-Code
+fc-list ：lang=zh
+\end_layout
+
+\begin_layout Standard
+上面是通过第一条命令去下载免费的字体库的，也可以自己从Windows 系统下面将Fonts文件夹下的字体拷贝到/usr/share/fonts/win/目录下，
+然后继续执行下面的指令。
+\end_layout
+
+\begin_layout Section
+LYX及Latex的入门教程
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "使用 LyX 以图形形式创建 LaTeX 文档"
+target "http://www.ibm.com/developerworks/cn/opensource/os-lyx/index.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "XETEX / LaTEX 中文排版之胡言乱语"
+target "http://blog.sina.com.cn/s/blog_61736b5d0100lsm7.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "LyX 入门教程 （翻译 The LyX Tutorial）"
+target "http://blog.sina.com.cn/s/blog_630e5dec0100w3jl.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "更改LyX的快捷工具栏（加入“导出”按钮）"
+target "http://www.loyhome.com/%E6%9B%B4%E6%94%B9lyx%E7%9A%84%E5%BF%AB%E6%8D%B7%E5%B7%A5%E5%85%B7%E6%A0%8F%EF%BC%88%E5%8A%A0%E5%85%A5%E5%AF%BC%E5%87%BA%E6%8C%89%E9%92%AE%EF%BC%89-2/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "LaTeX/Source Code Listings"
+target "https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings"
+
+\end_inset
+
+主要介绍如何在latex文档中插入源代码。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "【LaTeX入门】05、换行、换段、换页、首行缩进等命令"
+target "http://blog.csdn.net/xiazdong/article/details/8892105"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+LYX遇到的一些特别的问题
+\end_layout
+
+\begin_layout Enumerate
+首行缩进的问题
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+在段落缩进方面输出PDF 和输出HTML得到的样式不相同，这个折腾了我好久，还没有解决如何在输出到HTML的文件中，完成自动的段落首行缩进的问题。后来查询了相关
+资料，发现得到HTML的工具不是Xelatex，这样出现这个问题也就能解释了。
+\end_layout
+
+\begin_layout Standard
+解决的方法就是在开始的地方空一行（插入一个格式化符号就可以了），如果不需要考虑HTML 输出的话，完全可以忽视这个问题。
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+生成的PDF 文档中的书签没有编号
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+需要自己配置一下，在Doucument ->setting->PDF Properties
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Graphics
+	filename images/Screenshot from 2016-03-15 11:34:37.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "1"
+key "1"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "LaTeX中文排版（使用XeTeX）"
+target "http://linux-wiki.cn/wiki/LaTeX%E4%B8%AD%E6%96%87%E6%8E%92%E7%89%88%EF%BC%88%E4%BD%BF%E7%94%A8XeTeX%EF%BC%89"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "2"
+key "2"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "LyXOnUbuntu 官方帮助页面"
+target "http://wiki.lyx.org/LyX/LyXOnUbuntu#toc3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "3"
+key "3"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Alex-LyX中文问题 "
+target "http://www.cnblogs.com/biaoyu/archive/2012/04/28/2475318.html"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

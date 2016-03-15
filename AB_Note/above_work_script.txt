@@ -76,7 +76,7 @@ git commit --amemd
 
 sntp -s -t 1 time.nist.gov ##获取时间
 修改时区命令：
-echo "GMT+0" > /tmp/conf/timezone
+echo "GMT+0" > /tmp/conf/timezoneInotify file
 sh /etc/init.d/S03timezone
 echo GMT+8 > /conf/timezone
 修改配置文件，调试不能上线的问题
