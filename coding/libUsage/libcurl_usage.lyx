@@ -1,0 +1,295 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{indentfirst}
+\usepackage{xeCJK}
+\setmainfont{Times New Roman}
+\setCJKmainfont{STKaiti}
+\setCJKmonofont{STKaiti}% 设置缺省中文字体
+\setlength{\parindent}{2em}
+%\parindent 2em   %段首缩进
+\XeTeXlinebreaklocale “zh”
+%\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+%\newcommand\Helvetica{\fontspec {Helvetica}}
+
+\usepackage{listings}
+\usepackage{color}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package auto
+\inputencoding utf8
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 2
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Libcurl 库的使用
+\end_layout
+
+\begin_layout Author
+Lihaicg
+\end_layout
+
+\begin_layout Section*
+1.基础知识及入门文章
+\end_layout
+
+\begin_layout Standard
+libcurl就是利用不同的网络协议和对应的服务器进行连接访问。当前支持http, https, ftp, gopher, telnet, dict,
+ file, 和ldap 协议。libcurl同样支持HTTPS证书授权，HTTP POST, HTTP PUT, FTP 上传, HTTP基本表单上传，代理，
+cookies,和用户认证。
+\end_layout
+
+\begin_layout Standard
+入门文章介绍：
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "百度百科 Libcurl"
+target "http://baike.baidu.com/link?url=_WKFQs5vFORNl0-a-vwKeZJKKwSwiQbBD-nCOlAmqGw1iF_pIZlPoFGES_4ZaQJ5WGuWKp21fpoTkHiKM9EIEq"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "libcurl教程 （libcurl -tutorial 翻译）"
+target "http://www.cnblogs.com/lidabo/p/4159589.html"
+
+\end_inset
+
+这个是基于官方tutorial的一个翻译，挺详细的。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "libcurl programming tutorial"
+target "https://curl.haxx.se/libcurl/c/libcurl-tutorial.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "libcurl overview"
+target "https://curl.haxx.se/libcurl/c/libcurl.html"
+
+\end_inset
+
+ 官方的入门介绍，主要讲如何在C 程序中使用libcurl。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "libcurl - small example snippets"
+target "https://curl.haxx.se/libcurl/c/example.html"
+
+\end_inset
+
+ 官方的一些样例，基本能满足大部分的应用场景。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "curl_easy_setopt - set options for a curl easy handle"
+target "https://curl.haxx.se/libcurl/c/curl_easy_setopt.html"
+
+\end_inset
+
+set options for a curl easy handle
+\end_layout
+
+\begin_layout Standard
+Libcurl的官方文档做的非常完善，基本是每个常用的函数接口都有一个example，所以基本不用看其他的文章，有问题就查一下官方的API，就足够了。
+\end_layout
+
+\begin_layout Standard
+例如curl_easy_setopt这个函数的配置宏特别多，在官方网站上有对每一个宏的介绍和样例
+\begin_inset CommandInset citation
+LatexCommand cite
+key "2"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section*
+2.HTTPS遇到的一些问题
+\end_layout
+
+\begin_layout Standard
+对于证书认证的问题，有两个方法可以解决，第一个方法就是忽略证书的认证，
+\end_layout
+
+\begin_layout LyX-Code
+curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);         
+\end_layout
+
+\begin_layout LyX-Code
+curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0); 
+\end_layout
+
+\begin_layout Standard
+第二种方法就是先对证书进行认证
+\begin_inset CommandInset citation
+LatexCommand cite
+key "3"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl,CURLOPT_SSL_VERIFYPEER,1); 
+\end_layout
+
+\begin_layout Standard
+//curl_easy_setopt(curl,CURLOPT_CAPATH,"/etc/ssl/cert/");
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl,CURLOPT_CAINFO,"ca-cert.pem"); 
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl,CURLOPT_SSL_VERIFYHOST,1); 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "1"
+key "1"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "百度百科 Libcurl"
+target "http://baike.baidu.com/link?url=_WKFQs5vFORNl0-a-vwKeZJKKwSwiQbBD-nCOlAmqGw1iF_pIZlPoFGES_4ZaQJ5WGuWKp21fpoTkHiKM9EIEq"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "2"
+key "2"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "curl_easy_setopt - set options for a curl easy handle"
+target "https://curl.haxx.se/libcurl/c/curl_easy_setopt.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "3"
+key "3"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "libcurl使用认证证书 https认证"
+target "http://blog.csdn.net/chary8088/article/details/22950843"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

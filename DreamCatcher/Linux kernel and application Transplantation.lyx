@@ -183,7 +183,7 @@ kbuildMakefiles 内核各级目录源代码中大约有500个这样的文件，�
 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "key-4"
+key "3"
 
 \end_inset
 
@@ -494,7 +494,7 @@ target "http://blog.csdn.net/xuyuefei1988/article/details/9285379"
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
 label "3"
-key "key-4"
+key "3"
 
 \end_inset
 
