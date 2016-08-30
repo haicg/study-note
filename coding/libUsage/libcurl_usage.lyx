@@ -19,8 +19,17 @@
 %\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
 %\newcommand\Helvetica{\fontspec {Helvetica}}
 
+
 \usepackage{listings}
 \usepackage{color}
+\usepackage{xcolor}
+\lstset{numbers=left,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50},
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20}
+}
+\lstset{breaklines}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -232,6 +241,198 @@ curl_easy_setopt(curl,CURLOPT_CAINFO,"ca-cert.pem");
 
 \begin_layout Standard
 curl_easy_setopt(curl,CURLOPT_SSL_VERIFYHOST,1); 
+\end_layout
+
+\begin_layout Section*
+3.curl常用的opt设置
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Itemize
+CURL 的协议头显示：
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+/* ask libcurl to show us the verbose output */ 
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+\end_layout
+
+\begin_layout Standard
+/*pass headers to the data stream */
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl, CURLOPT_HEADER, 1L); 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+HTTP 的POST 行为需要的额外的设置：
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+URL的参数格式的指定为Json格式：
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+struct curl_slist *headers = NULL; 
+\end_layout
+
+\begin_layout Standard
+headers = curl_slist_append(headers, "Content-Type:application/json;charset=UTF-
+8"); 
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers); // 改协议头
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+指定POST的内容
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+curl_easy_setopt(curl, CURLOPT_POSTFIELDS, parm->parms_str); // 指定post内容
+ 
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+HTTP的GET 操作需要的设置
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\SpecialChar \-
+
+\end_layout
+
+\begin_layout Standard
+headers = curl_slist_append(headers, "Accept: Agent-007"); 
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers); // 改协议头
+\end_layout
+
+\begin_layout Standard
+curl_easy_setopt(curl, CURLOPT_HTTPGET, parm->parms_str); 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+设置处理放回数据的回调函数
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &process_data);
+\end_layout
+
+\begin_layout Itemize
+curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)https_response_buf); 
+\end_layout
+
+\begin_layout Itemize
+size_t process_data(void *buffer, size_t size, size_t nmemb, void *user_p)
+ { };
+\end_layout
+
+\begin_layout Itemize
+上面前面两句是设置回调函数的名称和用户用于接受返回数据的BUF，其中https_response_buf的指向和user_p的指向是一个样子的，同时函数proc
+ess_data的参数buffer是指向网络请求的返回值，这个变量会保持这一次网络请求的返回内容。
+\end_layout
+
+\begin_layout Itemize
+注意在获取返回值的时候要在最后加上一个‘
+\backslash
+0’。
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+if (data_size < MAX_LENGTH_HTTP_RESPONSE) { 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+strncpy(user_buf, (char *)buffer, data_size); 
+\end_layout
+
+\begin_layout LyX-Code
+user_buf[data_size] = '
+\backslash
+0'; 
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout LyX-Code
+下面附上一个HTTP及HTTPS的样例：
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstinputlisting[language=c++]{libcurl_http_op.h}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstinputlisting[language=c++]{libcurl_http_op.c}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Bibliography

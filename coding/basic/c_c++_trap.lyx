@@ -132,6 +132,90 @@ lstinputlisting[language=c++]{enum_test.cpp}
 
 \end_layout
 
+\begin_layout Standard
+是不是觉得这个输出结果应该都相同，都是f0000，但是结果和想象的不一样，执行出来的结果是：
+\end_layout
+
+\begin_layout LyX-Code
+A = f0000 
+\end_layout
+
+\begin_layout LyX-Code
+B>>12 = ffff0000 
+\end_layout
+
+\begin_layout LyX-Code
+C = f0000 
+\end_layout
+
+\begin_layout Standard
+这个结果让人有点想不到明白，为什么高位都会被补1了呢，难道是溢出了，但是算了一下也没有溢出。
+\end_layout
+
+\begin_layout Standard
+那么问题就可能出现在隐式转换上面，这个枚举类型在运算的过程中可能会被转换成什么呢，通过查找ISO C的标准
+\end_layout
+
+\begin_layout Quotation
+Usual Arirlmetric Conversions: 
+\end_layout
+
+\begin_layout Quotation
+First, if either operand has type long double.
+ the other operand is convened to long double.
+ 
+\end_layout
+
+\begin_layout Quotation
+Otherwise, if either operand has type double, the other operand is convened
+ to double.
+ 
+\end_layout
+
+\begin_layout Quotation
+Otherwise.
+ if either operand has type float, the other operand is convened to float.
+ 
+\end_layout
+
+\begin_layout Quotation
+Otherwise.
+ the integral promotions are performed on both operands.
+ Then the following rules are applied: If either operand has type unsigned
+ long int, the other operand is convened to unsigned long int.
+ 
+\end_layout
+
+\begin_layout Quotation
+Otherwise.
+ if onr operand has type long int and the other has type unsigned int.
+ if a long int can represent all values of an unsigned int.
+ the operand of type unsigned int is converted to long int; if a long int
+ cannot represent all the values of an unsigned int, both operands are convened
+ to unsigned long int 
+\end_layout
+
+\begin_layout Quotation
+Otherwise.
+ it rithcr operand has type long int, the other operand is converted to
+ long int 
+\end_layout
+
+\begin_layout Quotation
+Otherwisc.
+ if either operand has type unsigned int.
+ the other operand is convened t o unsigned int 
+\end_layout
+
+\begin_layout Quotation
+Otherwise both operands have type int.
+\end_layout
+
+\begin_layout Standard
+从上面的内容来说，这边的枚举类型应该是在运算的时候被转换成了int型，但是这边还有一个比较让人疑惑的地方就是C的输出也是经过移位运算的，但是结果没有改变，也就是
+在这个过程中没有发生隐式转换。可以发现隐式转换的产生是在赋值运算之后，也就是在赋值之前，任何变量都是保持原有的类型。
+\end_layout
+
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
@@ -152,76 +236,6 @@ key "2"
 \end_inset
 
 GB/T 15272-94 中华人民共和国国家标准 程序设计语言 C
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-4"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-5"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-6"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-7"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-8"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-9"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-2"
-
-\end_inset
-
-
 \end_layout
 
 \end_body

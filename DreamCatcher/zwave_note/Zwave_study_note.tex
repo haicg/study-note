@@ -1,0 +1,108 @@
+%% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xeCJK}
+
+\setmainfont{Times New Roman}
+
+\setCJKmainfont{STKaiti}
+\setCJKmonofont{STKaiti}% 设置缺省中文字体
+\setlength{\parindent}{2em}
+%\parindent 2em   %段首缩进
+
+\XeTeXlinebreaklocale “zh”
+%\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+%\newcommand\Helvetica{\fontspec {Helvetica}}
+
+\makeatother
+
+\usepackage{xunicode}
+\begin{document}
+
+\title{Zwave SDK 学习记录}
+
+\maketitle
+
+\part{基础知识}
+
+
+\section{节点类型}
+
+从协议的角度区分，总共有7种节点类型，分别是Portable Controller nodes, Static Controller
+nodes, Bridge Controller nodes, Routing Slave nodes, and Enhanced
+232 Slave nodes. （七种？）。关于congtroller的设备框架图见文献1中的Page13：
+\begin{enumerate}
+\item Portable Controller nodes 软件角度来看，主要有两个部分组成，控制应用层（Controller application
+）+控制的底层支持（zwave协议层和一些控制数据）。
+
+
+从硬件的角度来看需要一个外扩NVM。
+
+\item Static Controller nodes 软件角度来看，主要有两个部分组成，静态控制器应用层（Static Controller
+application）+控制的底层支持（zwave协议层和一些控制数据）。
+
+
+硬件的角度来看需要一个外扩NVM。 和上面 Portable Controller nodes 节点之间的区别就是这种类型的节点必须是用电源供电的设备，
+不能使用电池供电。 这个特性使得他可以 在Zwave网络担当Primary Conroller （在网络中可以为Slave nodes
+指定路由），同时还可以担当网络中的SUC（在网络中可以更新Seconary controller 的信息，不过在新版的SIS 代替了这个SUC）
+
+\item Z-Wave Bridge Controller Node 这个是基于Static Controller node 功能的一个扩展类型，扩展了桥接多种类型的网络的功能，例如将Zwave网络和UPNP
+的网络进行桥接。
+\item Routing Slave nodes 一般用于功能简单设备，在设备中没有保存整个网络的路由表。其中数据发送到目的地主要依靠和controller的一个association，并在添加时候由控制器给定一个路由设置。
+硬件上没有extern NVM ，只有一个64bytes的MTP。初始的时候，节点内的homeId是一个随机值，而node Id 必须为0.在添加某个zwave网络的时候，其中的Node
+Id和 Home Id 都是由主控制器来设置。用于电池设备时，会进入睡眠模式，同时具有WUT功能。
+\item Z-Wave Enhanced 232 Slave Node 是基于Routing Slave nodes， 主要区别就是（return
+route assignment of up to 232 destination nodes instead of 5）返回的路由，从最多5个节点，到最多232个节点，也就是路由的路线变长了。从硬件来说，比Routing
+Slave nodes多了一个extern nvm。
+\end{enumerate}
+
+\section{添加和删除节点的流程及网络自动更新}
+
+
+\subsection{添加流程}
+
+
+\subsection{删除流程}
+
+
+\subsection{网络自动更新}
+
+对于网络中只有一个controller的时候，基本没有什么问题。但是对于网络中存在多个controler，这个时候就需要网络有一个SIS
+，这个设备要负责整个网络的自动更新，首先添加节点设备的controller需要向SIS 主动上报相关信息，然后其余的controller可以向SIS
+去询问是否有更新， 这边可以看出， 这边其他控制器的更 新不一定 是同步的，可能存在某些延时(参见文献１的３.7.7)。
+
+
+\section{CenterController with serial api host}
+
+
+\subsection{Frame between the host and Zwave chip}
+
+主要有下面四种帧数据类型：ACK，NAK，CAN 和数据帧\cite{2}
+\begin{enumerate}
+\item ACK表示接收方已经接收一条有效的数据帧，需要发送方再次发送
+\item NAK表示接收放接收的是一条错误的数据帧，需要发送方再次发送
+\item CAN表示接收端主动丢弃有效数据帧，需要发送端至少等待一个周期之后再发送。例如：Zwave节点正在等待一个ACK，但是却收到一个有效数据帧，此时Zwave节点会给主机回一条CAN
+帧。主机收到此消息之后需要等待一个周期之后 再进行发送。
+\item 数据帧包含主机要发送的命令和相应的参数，由SOF（0x01）+length+type+serial api Command Id+Serial
+API Command Parameter 1 ...N+Checksum\end{enumerate}
+\begin{thebibliography}{1}
+\bibitem[1]{1}SD, INS12308-6, Instruction, Z-Wave 500 Series Appl.
+Prg. Guide v6.51.03 :12-13
+
+\bibitem[2]{2}SD,INS12350 -6,Serial API Host Appl. Prg. Guide :12-13\end{thebibliography}
+
+\end{document}

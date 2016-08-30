@@ -33,8 +33,8 @@ wget  http://dev.ppcam.tv/dl/lihai/custom/ESP2-VerInfo.txt
 mv ESP2-VerInfo.txt /tmp
 fw_check 0  http://dev.ppcam.tv/dl/lihai/custom/ &
 
-wget  http://dev.ppcam.tv/dl/lihai/ese/ESP2-VerInfo.txt
-mv ESP2-VerInfo.txt /tmp
+wget  http://dev.ppcam.tv/dl/lihai/ese/ESP3-VerInfo.txt
+mv ESP3-VerInfo.txt /tmp
 fw_check 0  http://dev.ppcam.tv/dl/lihai/ese/ &
 
 wget  http://dev.ppcam.tv/dl/lihai/latest/ESP2-VerInfo.txt

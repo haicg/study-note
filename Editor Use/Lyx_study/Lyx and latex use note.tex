@@ -1,0 +1,159 @@
+%% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxcode}
+{\par\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xeCJK}
+
+\setmainfont{Times New Roman}
+
+\setCJKmainfont{STKaiti}
+\setCJKmonofont{STKaiti}% 设置缺省中文字体
+\parindent 2em   %段首缩进
+
+\XeTeXlinebreaklocale “zh”
+%\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+\newcommand\Helvetica{\fontspec {Helvetica}}
+
+\makeatother
+
+\usepackage{xunicode}
+\begin{document}
+
+\title{LATEX 及LYX 使用问题总结}
+
+\maketitle
+
+\section{运行环境：}
+
+
+\subparagraph{系统：Ubuntu14.04 x86\_64}
+
+
+\section{LYX的中文支持问题}
+
+最后采用的是LYX和Xetex的组合，这种方法可以简单有效的解决中文乱码问题\cite{1}。
+
+这边一定要有个需要注意的问题，就是先安装Xetex，然后再安装LYX，因为LYX在安装完成后，第一次使用的时候会去扫描当前的系统环境。
+
+LYX肯定有一个初始化的文件夹，估计将那个删除也会使LYX 重新进行一次系统环境扫描（个人推测）。
+
+安装Xetex的命令即安装LYX的命令是\cite{2}：
+\begin{lyxcode}
+sudo~apt-get~install~texlive-xetex~(Install~xetex)
+
+sudo~add-apt-repository~ppa:lyx-devel/release~~(Add~PPA~for~the~'Lyx~release')
+
+sudo~apt-get~update
+
+sudo~apt-get~install~lyx2.0~(v1~or~v2.0~on~you,~install~from~ppa)
+\end{lyxcode}
+到这一步已经有了一个基本的写作环境，但是对于中文文档，还需要在LYX的文档导言区进行一些设置：
+\begin{lyxcode}
+\textbackslash{}usepackage\{amsmath\}~
+
+\textbackslash{}usepackage\{fontspec\}~
+
+\textbackslash{}usepackage\{xunicode\}~
+
+\textbackslash{}usepackage\{xltxtra\}~
+
+\textbackslash{}usepackage\{indentfirst\}~\%第一段也可以缩进
+
+\textbackslash{}usepackage\{listings\}~
+
+\textbackslash{}usepackage\{xeCJK\}
+
+\textbackslash{}setmainfont\{Times~New~Roman\}
+
+\textbackslash{}setCJKmainfont\{STKaiti\}~
+
+\textbackslash{}setCJKmonofont\{STKaiti\}~\%~设置缺省中文字体~
+
+\textbackslash{}parindent~2em~~~\%段首缩进
+
+\textbackslash{}Xe\TeX{}linebreaklocale~“zh”~\textbackslash{}Xe\TeX{}linebreakskip~=~0pt~plus~1pt~minus~0.1pt~
+
+\textbackslash{}newcommand\textbackslash{}Helvetica\{\textbackslash{}fontspec~\{Helvetica\}\}
+\end{lyxcode}
+
+\paragraph{上面的这段内容主要是设置中文的默认字体是华文楷体，英文的默认字体是Times New Roman，段首缩进2个字符。}
+
+
+\section{LYX 的中文字体问题}
+
+因为Ubuntu中默认的中文字体很少，需要自己手动进行安装。
+
+具体的安装步骤：
+\begin{lyxcode}
+sudo~apt-get~install~xfonts-wqy~ttf-wqy-microhei~ttf-wqy-zenhei
+
+fc-cache
+
+sudo~fc-cache~-f~-s~-v
+
+fc-list~：lang=zh
+\end{lyxcode}
+上面是通过第一条命令去下载免费的字体库的，也可以自己从Windows 系统下面将Fonts文件夹下的字体拷贝到/usr/share/fonts/win/目录下，然后继续执行下面的指令。
+
+
+\section{LYX及Latex的入门教程}
+\begin{enumerate}
+\item \href{http://www.ibm.com/developerworks/cn/opensource/os-lyx/index.html}{使用 LyX 以图形形式创建 LaTeX 文档}
+\item \href{http://blog.sina.com.cn/s/blog_61736b5d0100lsm7.html}{XETEX / LaTEX 中文排版之胡言乱语}
+\item \href{http://blog.sina.com.cn/s/blog_630e5dec0100w3jl.html}{LyX 入门教程 （翻译 The LyX Tutorial）}
+\item \href{http://www.loyhome.com/\%E6\%9B\%B4\%E6\%94\%B9lyx\%E7\%9A\%84\%E5\%BF\%AB\%E6\%8D\%B7\%E5\%B7\%A5\%E5\%85\%B7\%E6\%A0\%8F\%EF\%BC\%88\%E5\%8A\%A0\%E5\%85\%A5\%E5\%AF\%BC\%E5\%87\%BA\%E6\%8C\%89\%E9\%92\%AE\%EF\%BC\%89-2/}{更改LyX的快捷工具栏（加入“导出”按钮）}
+\item \href{https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings}{LaTeX/Source Code Listings}主要介绍如何在latex文档中插入源代码。
+\item \href{http://blog.csdn.net/xiazdong/article/details/8892105}{【LaTeX入门】05、换行、换段、换页、首行缩进等命令} 
+\end{enumerate}
+
+\section{LYX遇到的一些特别的问题}
+\begin{enumerate}
+\item 首行缩进的问题
+
+
+在段落缩进方面输出PDF 和输出HTML得到的样式不相同，这个折腾了我好久，还没有解决如何在输出到HTML的文件中，完成自动的段落首行缩进的问题。后来查询了相关资料，发现得到HTML的工具不是Xelatex，这样出现这个问题也就能解释了。
+
+
+解决的方法就是在开始的地方空一行（插入一个格式化符号就可以了），如果不需要考虑HTML 输出的话，完全可以忽视这个问题。
+
+\item 生成的PDF 文档中的书签没有编号
+
+
+需要自己配置一下，在Doucument ->setting->PDF Properties
+
+\end{enumerate}
+\includegraphics[scale=0.5]{\string"images/Screenshot from 2016-03-15 11:34:37\string".png}
+\begin{thebibliography}{1}
+\bibitem[1]{1}\href{http://linux-wiki.cn/wiki/LaTeX\%E4\%B8\%AD\%E6\%96\%87\%E6\%8E\%92\%E7\%89\%88\%EF\%BC\%88\%E4\%BD\%BF\%E7\%94\%A8XeTeX\%EF\%BC\%89}{LaTeX中文排版（使用XeTeX）}
+
+\bibitem[2]{2}\href{http://wiki.lyx.org/LyX/LyXOnUbuntu\#toc3}{LyXOnUbuntu 官方帮助页面}
+
+\bibitem[3]{3}\href{http://www.cnblogs.com/biaoyu/archive/2012/04/28/2475318.html}{Alex-LyX中文问题 }\end{thebibliography}
+
+\end{document}
