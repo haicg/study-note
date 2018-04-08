@@ -1,0 +1,133 @@
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside]{book}
+\usepackage[T1]{fontenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxcode}
+{\par\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{indentfirst}
+\usepackage{xeCJK}
+\setmainfont{Times New Roman}
+\setCJKmainfont{WenQuanYi Zen Hei}
+\setCJKmonofont{WenQuanYi Zen Hei}% 设置缺省中文字体
+\setlength{\parindent}{2em}
+%\parindent 2em   %段首缩进
+\XeTeXlinebreaklocale “zh”
+%\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+%\newcommand\Helvetica{\fontspec {Helvetica}}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\lstset{numbers=left,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50},
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20}
+}
+\lstset{breaklines}
+
+\makeatother
+
+\begin{document}
+
+\title{C/C++ 不容易发觉的坑}
+
+
+\author{Lihai}
+
+\maketitle
+
+\chapter{数据类型的隐式转换epackage\{fontspec\} \textbackslash{}usepackage\{xunicode\}
+\textbackslash{}usepackage\{xltxtra\} \textbackslash{}usepackage\{indentfirst\}
+\textbackslash{}usepackage\{xeCJK\} \textbackslash{}setmainfont\{Times
+New Roman\} \textbackslash{}setCJKmainfont\{WenQuanYi Zen Hei\} \textbackslash{}setlength\{\textbackslash{}parindent\}\{2em\}
+\%\textbackslash{}parindent 2em \%段首缩进 \textbackslash{}Xe\protect\TeX{}linebreaklocale
+“zh” \%\textbackslash{}Xe\protect\TeX{}linebreakskip = 0pt plus 1pt minus
+0.1pt \%\textbackslash{}newcommand\textbackslash{}Helvetica\{\textbackslash{}fontspec
+\{Helvetica\}\}}
+
+\textbackslash{}usepackage\{listings\} \textbackslash{}usepackage\{color\}
+\textbackslash{}usepackage\{xcolor\} \textbackslash{}lstset\{numbers=left,
+numberstyle=\textbackslash{}tiny, keywordstyle=\textbackslash{}color\{blue!70\},
+commentstyle=\textbackslash{}color\{red!50!green!50!blue!50\}, frame=single,
+rulesepcolor=\textbackslash{}color\{red!20!green!20!blue!20\} \} \textbackslash{}lstset\{breaklines\}
+
+
+\section{枚举类型到底是什么类型}
+
+首先看一个例子：
+\begin{lyxcode}
+\lstinputlisting[language=c++]{enum_test.cpp}
+\end{lyxcode}
+是不是觉得这个输出结果应该都相同，都是f0000，但是结果和想象的不一样，执行出来的结果是：
+\begin{lyxcode}
+A~=~f0000~
+
+B>\textcompwordmark{}>12~=~ffff0000~
+
+C~=~f0000~
+\end{lyxcode}
+这个结果让人有点想不到明白，为什么高位都会被补1了呢，难道是溢出了，但是算了一下也没有溢出。
+
+那么问题就可能出现在隐式转换上面，这个枚举类型在运算的过程中可能会被转换成什么呢，通过查找ISO C的标准
+\begin{quotation}
+Usual Arirlmetric Conversions: 
+
+First, if either operand has type long double. the other operand is
+convened to long double. 
+
+Otherwise, if either operand has type double, the other operand is
+convened to double. 
+
+Otherwise. if either operand has type float, the other operand is
+convened to float. 
+
+Otherwise. the integral promotions are performed on both operands.
+Then the following rules are applied: If either operand has type unsigned
+long int, the other operand is convened to unsigned long int. 
+
+Otherwise. if onr operand has type long int and the other has type
+unsigned int. if a long int can represent all values of an unsigned
+int. the operand of type unsigned int is converted to long int; if
+a long int cannot represent all the values of an unsigned int, both
+operands are convened to unsigned long int 
+
+Otherwise. it rithcr operand has type long int, the other operand
+is converted to long int 
+
+Otherwisc. if either operand has type unsigned int. the other operand
+is convened t o unsigned int 
+
+Otherwise both operands have type int.
+\end{quotation}
+从上面的内容来说，这边的枚举类型应该是在运算的时候被转换成了int型，但是这边还有一个比较让人疑惑的地方就是C的输出也是经过移位运算的，但是结果没有改变，也就是在这个过程中没有发生隐式转换。可以发现隐式转换的产生是在赋值运算之后，也就是在赋值之前，任何变量都是保持原有的类型。
+\begin{thebibliography}{1}
+\bibitem[1]{1}ANSI/ISO 9899-1990 American National Stanard for Programming
+Languages-C
+
+\bibitem[2]{2}GB/T 15272-94 中华人民共和国国家标准 程序设计语言 C\end{thebibliography}
+
+\end{document}

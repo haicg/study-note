@@ -2,3 +2,6 @@
 *.eps
 *.LyXconv
 *.pdf
+*.bin
+*.out
+*.pdf
